@@ -1,0 +1,56 @@
+---
+- hosts: gpu
+  tasks:
+  - name: fetch cuda repo package
+    sudo: true
+    get_url: dest=/var/tmp/ mode=0440 url="http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1410/x86_64/cuda-repo-ubuntu1410_7.0-28_amd64.deb"
+
+  - name: install cuda repo
+    sudo: true
+    shell: dpkg -i /var/tmp/cuda-repo-ubuntu1410_7.0-28_amd64.deb
+
+  - name: update and upgrade apt-get
+    sudo: true
+    apt: update_cache=true cache_valid_time=600
+  
+  - apt: pkg={{ item }} state=present
+    sudo: true
+    with_items:
+      - build-essential
+      - gcc
+      - g++
+      - gfortran
+      - git
+      - wget
+      - linux-image-generic
+      - libopenblas-dev
+      - python-dev
+      - python-pip
+      - python-nose
+      - python-numpy
+      - python-scipy 
+      - libprotobuf-dev
+      - libleveldb-dev
+      - libsnappy-dev
+      - libopencv-dev
+      - libhdf5-serial-dev
+      - libboost-all-dev
+      - libatlas-base-dev
+      - libgflags-dev
+      - libgoogle-glog-dev
+      - liblmdb-dev
+      - protobuf-compiler
+      - linux-image-extra-virtual
+      - cuda
+  
+  - name: install cuda sdk
+    lineinfile: state=present line="{{ item }}" dest=~/.profile
+    with_items:
+      - "export PATH=/usr/local/cuda/bin:$PATH"
+      - "export LD_LIBRARY_PATH=/usr/local/cuda/lib64"
+
+  # http://markus.com/install-theano-on-aws/
+  # $ cuda-install-samples-7.0.sh ~/
+  # $ cd NVIDIA\_CUDA-7.0\_Samples/1\_Utilities/deviceQuery  
+  # $ make  
+  # $ ./deviceQuery

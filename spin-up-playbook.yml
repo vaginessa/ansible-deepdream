@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+  - ec2:
+      spot_price: 0.13
+      spot_wait_timeout: 600
+      instance_type: g2.2xlarge
+      image: ami-6926d62d
+      keypair: "{{ lookup('ENV', 'EC2_KEYPAIR') }}"
+      wait: yes
