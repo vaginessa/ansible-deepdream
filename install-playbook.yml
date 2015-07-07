@@ -41,6 +41,9 @@
       - liblmdb-dev
       - protobuf-compiler
       - linux-image-extra-virtual
+      - ipython
+      - ipython-notebook
+      - python-protobuf
       - cuda
   
   - name: install cuda sdk
@@ -49,8 +52,30 @@
       - "export PATH=/usr/local/cuda/bin:$PATH"
       - "export LD_LIBRARY_PATH=/usr/local/cuda/lib64"
 
+  #- shell: for req in $(cat python/requirements.txt); do pip install $req; done
+  # wget ~/caffe/models/bvlc_googlenet http://dl.caffe.berkeleyvision.org/bvlc_googlenet.caffemodel
+  #  ssh -X -A ubuntu@ec2-54-176-250-180.us-west-1.compute.amazonaws.com
+
   # http://markus.com/install-theano-on-aws/
   # $ cuda-install-samples-7.0.sh ~/
   # $ cd NVIDIA\_CUDA-7.0\_Samples/1\_Utilities/deviceQuery  
   # $ make  
   # $ ./deviceQuery
+
+  - name: install caffe repo
+    git: dest=~/caffe repo="git@github.com:BVLC/caffe.git"
+
+  - name: install ld-so-conf
+    sudo: true
+    shell: echo /usr/local/cuda-7.0/lib64 > /etc/ld.so.conf.d/cuda.conf && ldconfig
+
+  # $ shell: sudo ln /dev/null /dev/raw1394
+
+  #- name: compile caffe
+  #  shell: chdir=~/caffe {{ item }}
+  #  with_items:
+  #    - cp Makefile.config.example Makefile.config
+  #    - make all -j8
+  #    - make test
+  #    - make runtest
+  #    - make distribute
